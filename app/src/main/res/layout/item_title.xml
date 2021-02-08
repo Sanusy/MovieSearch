@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="4dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/title_poster"
+            android:layout_width="54dp"
+            android:layout_height="96dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/icon_title_palceholder" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/title_name_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:textColor="@android:color/black"
+            app:layout_constraintBottom_toTopOf="@+id/title_type"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/title_poster"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Title Name" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/title_type"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@+id/title_production_year_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/title_poster"
+            app:layout_constraintTop_toBottomOf="@+id/title_name_text"
+            tools:text="TV Series" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/title_production_year_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:maxLength="80"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@+id/rating_icon_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/title_poster"
+            app:layout_constraintTop_toBottomOf="@+id/title_type"
+            tools:text="1991" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/title_rating_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/rating_icon_image"
+            app:layout_constraintEnd_toStartOf="@+id/rating_icon_image"
+            app:layout_constraintTop_toTopOf="@+id/rating_icon_image"
+            tools:text="9.1" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/rating_icon_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/title_production_year_text"
+            app:srcCompat="@drawable/icon_rating" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>
