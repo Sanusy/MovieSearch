@@ -1,5 +1,6 @@
 package com.gmail.ivan.morozyk.moviesearch.mvp.presenter
 
+import com.github.kittinunf.fuel.core.FuelError
 import com.gmail.ivan.morozyk.moviesearch.data.mapper.TitleDtoMapper
 import com.gmail.ivan.morozyk.moviesearch.data.service.TitleService
 import com.gmail.ivan.morozyk.moviesearch.mvp.contract.QueryType
@@ -13,6 +14,10 @@ import moxy.presenterScope
 class TitleListPresenter(private val titleService: TitleService) :
     MvpPresenter<TitleListContract.View>(), TitleListContract.Presenter {
 
+    private var lastSearchQuery: String? = null
+
+    private var lastGetQuery: QueryType? = null
+
     override fun attachView(view: TitleListContract.View?) {
         super.attachView(view)
         viewState.showProgress()
@@ -21,6 +26,10 @@ class TitleListPresenter(private val titleService: TitleService) :
 
     override fun searchTitleByWord(word: String) {
         viewState.showProgress()
+
+        lastSearchQuery = word
+        lastGetQuery = null
+
         presenterScope.launch {
             val result = withContext(Dispatchers.IO) { titleService.searchTitlesByWord(word) }
             result.fold(
@@ -36,7 +45,6 @@ class TitleListPresenter(private val titleService: TitleService) :
                         } else {
                             showTitleList(titlesToShow)
                         }
-                        setAppTitle(null)
                         hideProgress()
                     }
                 },
@@ -48,6 +56,10 @@ class TitleListPresenter(private val titleService: TitleService) :
 
     override fun getTitleList(queryType: QueryType) {
         viewState.showProgress()
+
+        lastGetQuery = queryType
+        lastSearchQuery = null
+
         presenterScope.launch {
             val result =
                 withContext(Dispatchers.IO) { titleService.getTitlesByQuery(queryType.queryString) }
@@ -61,10 +73,8 @@ class TitleListPresenter(private val titleService: TitleService) :
                     with(viewState) {
                         if (titlesToShow.isNullOrEmpty()) {
                             showEmptyContentError()
-                            setAppTitle(null)
                         } else {
                             showTitleList(titlesToShow)
-                            setAppTitle(queryType)
                         }
                         hideProgress()
                     }
@@ -75,8 +85,20 @@ class TitleListPresenter(private val titleService: TitleService) :
         }
     }
 
-    private fun showError(error: Throwable) {
-        if (error.message != null && error.message!!.contains("Unable to resolve host \"imdb-api.com\": No address associated with hostname")) {
+    override fun clearSearchButtonClicked() {
+        viewState.clearSearch()
+    }
+
+    override fun refresh() {
+        if (lastGetQuery != null) {
+            getTitleList(lastGetQuery!!)
+        } else if (lastSearchQuery != null) {
+            searchTitleByWord(lastSearchQuery!!)
+        }
+    }
+
+    private fun showError(error: FuelError) {
+        if (error.response.statusCode == -1) {
             viewState.showInternetConnectionError()
         } else {
             viewState.showUnknownError()

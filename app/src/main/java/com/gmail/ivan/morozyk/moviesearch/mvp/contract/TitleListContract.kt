@@ -18,11 +18,11 @@ interface TitleListContract {
 
         fun showTitleList(titleList: List<Title>)
 
+        fun clearSearch()
+
         fun showProgress()
 
         fun hideProgress()
-
-        fun setAppTitle(queryType: QueryType?)
     }
 
     interface Presenter {
@@ -30,6 +30,10 @@ interface TitleListContract {
         fun searchTitleByWord(word: String)
 
         fun getTitleList(queryType: QueryType)
+
+        fun clearSearchButtonClicked()
+
+        fun refresh()
     }
 }
 

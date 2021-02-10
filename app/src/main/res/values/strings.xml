@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">MovieSearch</string>
 
+    <!--  Bottom Navigation  -->
+    <string name="bottom_navigation_titles">Titles</string>
+    <string name="bottom_navigation_persons">Persons</string>
+    <string name="bottom_navigation_settings">Settings</string>
+
     <!--  TitleListFragment  -->
     <string name="title_list_no_internet_string">No internet! Try again later.</string>
     <string name="title_list_no_content_string">We didn`t find anything.</string>
@@ -12,4 +17,16 @@
     <string name="title_list_most_popular_series">Most Popular Series</string>
     <string name="title_list_in_theatres">In Theatres</string>
     <string name="title_list_coming_soon">Coming Soon</string>
+    <string name="title_list_clear_search">Enter something to search</string>
+
+    <!--  Title Details  -->
+    <string name="title_details_unknown_error_string">Oops! Something went wrong.</string>
+    <string name="title_details_no_internet_string">No internet! Try again later.</string>
+    <string name="title_details_runtime_string">Runtime: \t\t%s</string>
+    <string name="title_details_release_date">Release: \t\t%s</string>
+    <string name="title_details_genres">Genres: \t\t%s</string>
+    <string name="title_details_companies">Companies: \t%s</string>
+    <string name="title_details_plot">Plot:</string>
+    <string name="title_details_stars">Stars:</string>
+    <string name="title_details_as_character">as %s</string>
 </resources>

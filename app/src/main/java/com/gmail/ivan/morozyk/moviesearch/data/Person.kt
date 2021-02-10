@@ -1,6 +1,12 @@
 package com.gmail.ivan.morozyk.moviesearch.data
 
-import com.squareup.moshi.JsonClass
+import androidx.recyclerview.widget.DiffUtil
 
-@JsonClass(generateAdapter = true)
-data class Person(val id: String)
+data class Person(val id: String, val name: String, val image: String?, val asCharacter: String?) {
+
+    object PersonDifUtil : DiffUtil.ItemCallback<Person>() {
+        override fun areItemsTheSame(oldItem: Person, newItem: Person) = oldItem == newItem
+
+        override fun areContentsTheSame(oldItem: Person, newItem: Person) = oldItem.id == newItem.id
+    }
+}

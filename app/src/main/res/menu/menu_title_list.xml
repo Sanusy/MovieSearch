@@ -3,36 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/top_250_movies"
-        android:title="@string/title_list_top_250_movies_string"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/top_250_series"
-        android:title="@string/title_list_top_250_series_string"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/most_popular_movies"
-        android:title="@string/title_list_most_popular_movies"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/most_popular_series"
-        android:title="@string/title_list_most_popular_series"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/in_theatres"
-        android:title="@string/title_list_in_theatres"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/coming_soon"
-        android:title="@string/title_list_coming_soon"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/search_title"
         android:icon="@drawable/icon_search"
         android:title="@string/title_list_search_title_string"

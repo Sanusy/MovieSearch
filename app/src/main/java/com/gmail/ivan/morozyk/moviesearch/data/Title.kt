@@ -8,7 +8,8 @@ data class Title(
     val image: String,
     val runTime: String?,
     val plot: String?,
-    val starList: List<Person>?,
+    val releaseDate:String?,
+    val actorList: List<Person>?,
     val genres: String?,
     val companies: String?,
     val rating: String?

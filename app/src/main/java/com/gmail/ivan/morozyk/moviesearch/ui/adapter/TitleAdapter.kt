@@ -60,7 +60,7 @@ class TitleAdapter(private val onClickAction: (String) -> Unit) :
                 }
 
                 Glide.with(itemView).load(title.image).centerCrop()
-                    .placeholder(R.drawable.icon_title_palceholder).into(titlePoster)
+                    .placeholder(R.drawable.icon_title_placeholder).into(titlePoster)
             }
         }
     }

@@ -1,9 +1,12 @@
 package com.gmail.ivan.morozyk.moviesearch.ui.fragment
 
 import android.os.Bundle
-import android.view.*
-import androidx.annotation.StringRes
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.forEach
+import androidx.fragment.app.commit
 import com.gmail.ivan.morozyk.moviesearch.R
 import com.gmail.ivan.morozyk.moviesearch.data.Title
 import com.gmail.ivan.morozyk.moviesearch.data.service.TitleServiceImpl
@@ -15,6 +18,7 @@ import com.gmail.ivan.morozyk.moviesearch.mvp.contract.QueryType
 import com.gmail.ivan.morozyk.moviesearch.mvp.contract.TitleListContract
 import com.gmail.ivan.morozyk.moviesearch.mvp.presenter.TitleListPresenter
 import com.gmail.ivan.morozyk.moviesearch.ui.adapter.TitleAdapter
+import com.google.android.material.chip.Chip
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 
@@ -24,6 +28,8 @@ class TitleListFragment : BaseFragment<FragmentTitleListBinding>(), TitleListCon
     lateinit var presenter: TitleListPresenter
 
     private lateinit var adapter: TitleAdapter
+
+    private lateinit var searchView: SearchView
 
     @ProvidePresenter
     fun providePresenter(): TitleListPresenter {
@@ -39,60 +45,59 @@ class TitleListFragment : BaseFragment<FragmentTitleListBinding>(), TitleListCon
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
 
-        adapter = TitleAdapter { titleId -> }
+        adapter = TitleAdapter { titleId ->
+            parentFragmentManager.commit {
+                setReorderingAllowed(true)
+                addToBackStack(null)
+                replace(R.id.fragment_container, TitleDetailsFragment.newInstance(titleId))
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.titleRecycler.adapter = adapter
-    }
+        with(binding) {
+            titleRecycler.adapter = adapter
+            titleListPullToRefresh.setOnRefreshListener { presenter.refresh() }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_title_list, menu)
-
-        val searchView = menu.findItem(R.id.search_title).actionView as SearchView
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                presenter.searchTitleByWord(query!!)
-                return true
+            titleListChipGroup.setOnCheckedChangeListener { group, _ ->
+                group.forEach {
+                    val chip = (it as Chip)
+                    chip.isEnabled = !chip.isChecked
+                }
             }
 
-            override fun onQueryTextChange(newText: String?): Boolean {
-                //none
-                return true
-            }
-        })
-    }
+            topMoviesChip.isChecked = true
 
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.top_250_movies -> {
-            presenter.getTitleList(QueryType.TOP_250_MOVIES)
-            true
+            topMoviesChip.setOnClickListener { presenter.getTitleList(QueryType.TOP_250_MOVIES) }
+            topSeriesChip.setOnClickListener { presenter.getTitleList(QueryType.TOP_250_SERIES) }
+            mostPopularMoviesChip.setOnClickListener { presenter.getTitleList(QueryType.MOST_POPULAR_MOVIES) }
+            mostPopularSeriesChip.setOnClickListener { presenter.getTitleList(QueryType.MOST_POPULAR_SERIES) }
+            inTheatresChip.setOnClickListener { presenter.getTitleList(QueryType.IN_THEATRES) }
+            comingSoonChip.setOnClickListener { presenter.getTitleList(QueryType.COMING_SOON) }
+
+            searchView = titleListToolbar.menu.findItem(R.id.search_title).actionView as SearchView
+            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    binding.titleListChipGroup.forEach { (it as Chip).isChecked = false }
+                    presenter.searchTitleByWord(query!!)
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    //none
+                    return true
+                }
+            })
+
+            val closeButton: View? =
+                searchView.findViewById(androidx.appcompat.R.id.search_close_btn)
+            closeButton?.setOnClickListener {
+                presenter.clearSearchButtonClicked()
+            }
         }
-        R.id.top_250_series -> {
-            presenter.getTitleList(QueryType.TOP_250_SERIES)
-            true
-        }
-        R.id.most_popular_movies -> {
-            presenter.getTitleList(QueryType.MOST_POPULAR_MOVIES)
-            true
-        }
-        R.id.most_popular_series -> {
-            presenter.getTitleList(QueryType.MOST_POPULAR_SERIES)
-            true
-        }
-        R.id.in_theatres -> {
-            presenter.getTitleList(QueryType.IN_THEATRES)
-            true
-        }
-        R.id.coming_soon -> {
-            presenter.getTitleList(QueryType.COMING_SOON)
-            true
-        }
-        else -> super.onOptionsItemSelected(item)
     }
 
     override fun showInternetConnectionError() {
@@ -121,8 +126,18 @@ class TitleListFragment : BaseFragment<FragmentTitleListBinding>(), TitleListCon
         binding.titleRecycler.makeVisible()
     }
 
+    override fun clearSearch() {
+        searchView.setQuery("", false)
+        with(binding) {
+            noContentText.makeVisible()
+            titleRecycler.makeInvisible()
+            noContentText.text = getString(R.string.title_list_clear_search)
+        }
+    }
+
     override fun showProgress() {
         with(binding) {
+            titleListPullToRefresh.isRefreshing = false
             titleRecycler.makeInvisible()
             titleLoadingProgress.show()
             noContentText.makeGone()
@@ -131,21 +146,6 @@ class TitleListFragment : BaseFragment<FragmentTitleListBinding>(), TitleListCon
 
     override fun hideProgress() {
         binding.titleLoadingProgress.hide()
-    }
-
-    override fun setAppTitle(queryType: QueryType?) {
-        requireActivity().title =
-            getString(if (queryType == null) R.string.app_name else getTitleString(queryType))
-    }
-
-    @StringRes
-    private fun getTitleString(queryType: QueryType) = when (queryType) {
-        QueryType.TOP_250_MOVIES -> R.string.title_list_top_250_movies_string
-        QueryType.TOP_250_SERIES -> R.string.title_list_top_250_series_string
-        QueryType.MOST_POPULAR_MOVIES -> R.string.title_list_most_popular_movies
-        QueryType.MOST_POPULAR_SERIES -> R.string.title_list_most_popular_series
-        QueryType.IN_THEATRES -> R.string.title_list_in_theatres
-        QueryType.COMING_SOON -> R.string.title_list_coming_soon
     }
 
     companion object {
