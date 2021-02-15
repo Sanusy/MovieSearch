@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.MovieSearch" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.MovieSearch" parent="Theme.MaterialComponents.DayNight.NoActionBarпше фвв">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>

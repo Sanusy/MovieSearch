@@ -29,4 +29,10 @@
     <string name="title_details_plot">Plot:</string>
     <string name="title_details_stars">Stars:</string>
     <string name="title_details_as_character">as %s</string>
+
+    <!--  PersonList  -->
+    <string name="person_list_clear_search">Enter something to search</string>
+    <string name="person_list_no_internet_string">No internet! Try again later.</string>
+    <string name="person_list_no_content_string">We didn`t find anything.</string>
+    <string name="person_list_unknown_error_string">Oops! Something went wrong.</string>
 </resources>

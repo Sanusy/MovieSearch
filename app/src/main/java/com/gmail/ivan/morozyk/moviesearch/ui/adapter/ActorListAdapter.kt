@@ -2,6 +2,7 @@ package com.gmail.ivan.morozyk.moviesearch.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -11,7 +12,7 @@ import com.gmail.ivan.morozyk.moviesearch.databinding.ItemActorBinding
 
 
 class ActorListAdapter(private val onPersonClick: (String) -> Unit) :
-    ListAdapter<Person, ActorListAdapter.PersonHolder>(Person.PersonDifUtil) {
+    ListAdapter<Person, ActorListAdapter.PersonHolder>(personDiffUtil) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = PersonHolder(
         ItemActorBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -36,4 +37,10 @@ class ActorListAdapter(private val onPersonClick: (String) -> Unit) :
             }
         }
     }
+}
+
+private val personDiffUtil = object : DiffUtil.ItemCallback<Person>() {
+    override fun areItemsTheSame(oldItem: Person, newItem: Person) = oldItem == newItem
+
+    override fun areContentsTheSame(oldItem: Person, newItem: Person) = oldItem.id == newItem.id
 }

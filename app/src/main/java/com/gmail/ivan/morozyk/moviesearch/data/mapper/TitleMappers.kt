@@ -1,17 +1,26 @@
 package com.gmail.ivan.morozyk.moviesearch.data.mapper
 
+import com.gmail.ivan.morozyk.moviesearch.data.Person
+import com.gmail.ivan.morozyk.moviesearch.data.PersonDto
 import com.gmail.ivan.morozyk.moviesearch.data.Title
 import com.gmail.ivan.morozyk.moviesearch.data.TitleDto
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TitleDtoMapper : BaseMapper<TitleDto, Title> {
+class TitleDtoMapper(private val personMapper: BaseMapper<PersonDto, Person>) :
+    BaseMapper<TitleDto, Title> {
 
     override fun map(input: TitleDto): Title {
         var type = input.type
         var year = input.year
         val description = input.description
-        var date = input.releaseDate
+        val date = input.releaseDate?.let {
+            val parser = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val formatter = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+
+            val parse = parser.parse(input.releaseDate)
+            formatter.format(parse!!)
+        }
 
         if (!description.isNullOrEmpty() && year.isNullOrEmpty()) {
             val descriptionItems = description.split('(', ')')
@@ -26,15 +35,6 @@ class TitleDtoMapper : BaseMapper<TitleDto, Title> {
             descriptionItems.forEach { if (it.contains(pattern)) year = it }
         }
 
-        date = date?.let {
-            val parser = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val formatter = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
-
-            val parse = parser.parse(date!!)
-            formatter.format(parse!!)
-        }
-
-        val personMapper = PersonDtoMapper()
         val actorList = input.actorList?.map { personMapper.map(it) }
 
         return Title(

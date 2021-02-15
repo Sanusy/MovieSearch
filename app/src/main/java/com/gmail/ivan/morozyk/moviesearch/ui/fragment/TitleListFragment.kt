@@ -21,21 +21,19 @@ import com.gmail.ivan.morozyk.moviesearch.ui.adapter.TitleAdapter
 import com.google.android.material.chip.Chip
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
+import org.koin.android.ext.android.get
 
 class TitleListFragment : BaseFragment<FragmentTitleListBinding>(), TitleListContract.View {
 
     @InjectPresenter
     lateinit var presenter: TitleListPresenter
 
+    @ProvidePresenter
+    fun providePresenter():TitleListPresenter = get()
+
     private lateinit var adapter: TitleAdapter
 
     private lateinit var searchView: SearchView
-
-    @ProvidePresenter
-    fun providePresenter(): TitleListPresenter {
-        val service = TitleServiceImpl()
-        return TitleListPresenter(service)
-    }
 
     override fun inflateBinding(
         inflater: LayoutInflater,
@@ -43,22 +41,19 @@ class TitleListFragment : BaseFragment<FragmentTitleListBinding>(), TitleListCon
         attachToRoot: Boolean
     ) = FragmentTitleListBinding.inflate(inflater, container, attachToRoot)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        adapter = TitleAdapter { titleId ->
-            parentFragmentManager.commit {
-                setReorderingAllowed(true)
-                addToBackStack(null)
-                replace(R.id.fragment_container, TitleDetailsFragment.newInstance(titleId))
-            }
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         with(binding) {
+
+            adapter = TitleAdapter { titleId ->
+                parentFragmentManager.commit {
+                    setReorderingAllowed(true)
+                    addToBackStack(null)
+                    replace(R.id.fragment_container, TitleDetailsFragment.newInstance(titleId))
+                }
+            }
+
             titleRecycler.adapter = adapter
             titleListPullToRefresh.setOnRefreshListener { presenter.refresh() }
 

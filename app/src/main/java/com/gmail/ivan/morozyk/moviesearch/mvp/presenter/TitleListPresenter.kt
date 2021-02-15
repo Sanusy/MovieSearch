@@ -1,7 +1,9 @@
 package com.gmail.ivan.morozyk.moviesearch.mvp.presenter
 
 import com.github.kittinunf.fuel.core.FuelError
-import com.gmail.ivan.morozyk.moviesearch.data.mapper.TitleDtoMapper
+import com.gmail.ivan.morozyk.moviesearch.data.Title
+import com.gmail.ivan.morozyk.moviesearch.data.TitleDto
+import com.gmail.ivan.morozyk.moviesearch.data.mapper.BaseMapper
 import com.gmail.ivan.morozyk.moviesearch.data.service.TitleService
 import com.gmail.ivan.morozyk.moviesearch.mvp.contract.QueryType
 import com.gmail.ivan.morozyk.moviesearch.mvp.contract.TitleListContract
@@ -11,12 +13,13 @@ import kotlinx.coroutines.withContext
 import moxy.MvpPresenter
 import moxy.presenterScope
 
-class TitleListPresenter(private val titleService: TitleService) :
+class TitleListPresenter(
+    private val titleService: TitleService,
+    private val titleMapper: BaseMapper<TitleDto, Title>
+) :
     MvpPresenter<TitleListContract.View>(), TitleListContract.Presenter {
 
-    private var lastSearchQuery: String? = null
-
-    private var lastGetQuery: QueryType? = null
+    private var query: Query = Query.GetQuery(QueryType.TOP_250_MOVIES)
 
     override fun attachView(view: TitleListContract.View?) {
         super.attachView(view)
@@ -27,16 +30,14 @@ class TitleListPresenter(private val titleService: TitleService) :
     override fun searchTitleByWord(word: String) {
         viewState.showProgress()
 
-        lastSearchQuery = word
-        lastGetQuery = null
+        query = Query.SearchQuery(word)
 
         presenterScope.launch {
             val result = withContext(Dispatchers.IO) { titleService.searchTitlesByWord(word) }
             result.fold(
                 success = {
-                    val mapper = TitleDtoMapper()
                     val titlesToShow = it.results.map { titleDto ->
-                        mapper.map(titleDto)
+                        titleMapper.map(titleDto)
                     }
 
                     with(viewState) {
@@ -57,17 +58,15 @@ class TitleListPresenter(private val titleService: TitleService) :
     override fun getTitleList(queryType: QueryType) {
         viewState.showProgress()
 
-        lastGetQuery = queryType
-        lastSearchQuery = null
+        query = Query.GetQuery(queryType)
 
         presenterScope.launch {
             val result =
                 withContext(Dispatchers.IO) { titleService.getTitlesByQuery(queryType.queryString) }
             result.fold(
                 success = {
-                    val mapper = TitleDtoMapper()
                     val titlesToShow = it.items.map { titleDto ->
-                        mapper.map(titleDto)
+                        titleMapper.map(titleDto)
                     }
 
                     with(viewState) {
@@ -89,12 +88,9 @@ class TitleListPresenter(private val titleService: TitleService) :
         viewState.clearSearch()
     }
 
-    override fun refresh() {
-        if (lastGetQuery != null) {
-            getTitleList(lastGetQuery!!)
-        } else if (lastSearchQuery != null) {
-            searchTitleByWord(lastSearchQuery!!)
-        }
+    override fun refresh() = when (query) {
+        is Query.GetQuery -> getTitleList((query as Query.GetQuery).type)
+        is Query.SearchQuery -> searchTitleByWord((query as Query.SearchQuery).query)
     }
 
     private fun showError(error: FuelError) {
@@ -104,5 +100,10 @@ class TitleListPresenter(private val titleService: TitleService) :
             viewState.showUnknownError()
         }
         viewState.hideProgress()
+    }
+
+    private sealed class Query {
+        data class GetQuery(val type: QueryType) : Query()
+        data class SearchQuery(val query: String) : Query()
     }
 }
