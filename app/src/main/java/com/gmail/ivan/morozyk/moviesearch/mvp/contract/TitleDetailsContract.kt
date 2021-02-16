@@ -1,6 +1,7 @@
 package com.gmail.ivan.morozyk.moviesearch.mvp.contract
 
 import com.gmail.ivan.morozyk.moviesearch.data.Title
+import com.gmail.ivan.morozyk.moviesearch.data.service.HttpError
 import moxy.MvpView
 import moxy.viewstate.strategy.AddToEndSingleStrategy
 import moxy.viewstate.strategy.StateStrategyType
@@ -12,9 +13,7 @@ interface TitleDetailsContract {
 
         fun showTitle(title: Title)
 
-        fun showInternetError()
-
-        fun showUnknownError()
+        fun showError(error: HttpError)
 
         fun showProgress()
 

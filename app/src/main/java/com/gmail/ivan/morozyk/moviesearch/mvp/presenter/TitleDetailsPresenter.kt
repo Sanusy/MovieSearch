@@ -1,9 +1,9 @@
 package com.gmail.ivan.morozyk.moviesearch.mvp.presenter
 
-import com.github.kittinunf.fuel.core.FuelError
 import com.gmail.ivan.morozyk.moviesearch.data.Title
 import com.gmail.ivan.morozyk.moviesearch.data.TitleDto
 import com.gmail.ivan.morozyk.moviesearch.data.mapper.BaseMapper
+import com.gmail.ivan.morozyk.moviesearch.data.service.HttpErrorMapper
 import com.gmail.ivan.morozyk.moviesearch.data.service.TitleService
 import com.gmail.ivan.morozyk.moviesearch.mvp.contract.TitleDetailsContract
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +14,8 @@ import moxy.presenterScope
 
 class TitleDetailsPresenter(
     private val titleService: TitleService,
-    private val mapper: BaseMapper<TitleDto, Title>
+    private val mapper: BaseMapper<TitleDto, Title>,
+    private val errorMapper: HttpErrorMapper
 ) : MvpPresenter<TitleDetailsContract.View>(),
     TitleDetailsContract.Presenter {
 
@@ -28,18 +29,10 @@ class TitleDetailsPresenter(
             result.fold(success = {
                 viewState.showTitle(mapper.map(it))
             }, failure = {
-                showError(it)
+                viewState.showError(errorMapper.mapErrorCode(it.response.statusCode))
             }).also {
                 viewState.hideProgress()
             }
-        }
-    }
-
-    private fun showError(error: FuelError) {
-        if (error.response.statusCode == -1) {
-            viewState.showInternetError()
-        } else {
-            viewState.showUnknownError()
         }
     }
 }

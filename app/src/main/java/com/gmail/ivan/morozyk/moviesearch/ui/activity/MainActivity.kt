@@ -7,6 +7,7 @@ import androidx.fragment.app.commit
 import com.gmail.ivan.morozyk.moviesearch.R
 import com.gmail.ivan.morozyk.moviesearch.databinding.ActivityMainBinding
 import com.gmail.ivan.morozyk.moviesearch.ui.fragment.PersonListFragment
+import com.gmail.ivan.morozyk.moviesearch.ui.fragment.SettingsFragment
 import com.gmail.ivan.morozyk.moviesearch.ui.fragment.TitleListFragment
 
 class MainActivity : AppCompatActivity() {
@@ -29,7 +30,8 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.settings_menu_item -> {
-                    TODO("Add persons fragment")
+                    navigate(SettingsFragment.newInstance())
+                    true
                 }
                 else -> false
             }

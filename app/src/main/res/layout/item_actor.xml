@@ -26,7 +26,6 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:textAlignment="textStart"
-        android:textColor="@color/black"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/actor_image"

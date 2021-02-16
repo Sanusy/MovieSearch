@@ -18,6 +18,9 @@
     <string name="title_list_in_theatres">In Theatres</string>
     <string name="title_list_coming_soon">Coming Soon</string>
     <string name="title_list_clear_search">Enter something to search</string>
+    <string name="title_list_internal_server_error">Internal server error.</string>
+    <string name="title_list_not_authorized_error">Not Authorized Error</string>
+    <string name="title_list_not_found_error">Not Found</string>
 
     <!--  Title Details  -->
     <string name="title_details_unknown_error_string">Oops! Something went wrong.</string>
@@ -29,10 +32,33 @@
     <string name="title_details_plot">Plot:</string>
     <string name="title_details_stars">Stars:</string>
     <string name="title_details_as_character">as %s</string>
+    <string name="title_details_internal_server_error">Internal server error.</string>
+    <string name="title_details_not_authorized_error">Not Authorized Error</string>
+    <string name="title_details_not_found_error">Not Found</string>
 
     <!--  PersonList  -->
     <string name="person_list_clear_search">Enter something to search</string>
     <string name="person_list_no_internet_string">No internet! Try again later.</string>
     <string name="person_list_no_content_string">We didn`t find anything.</string>
     <string name="person_list_unknown_error_string">Oops! Something went wrong.</string>
+    <string name="person_list_internal_server_error">Internal server error.</string>
+    <string name="person_list_not_authorized_error">Not Authorized Error</string>
+    <string name="person_list_not_found_error">Not Found</string>
+
+    <!--  PersonDetails  -->
+    <string name="person_details_no_internet_string">No internet! Try again later.</string>
+    <string name="person_details_unknown_error_string">Oops! Something went wrong.</string>
+    <string name="person_details_internal_server_error">Internal server error.</string>
+    <string name="person_details_not_authorized_error">Not Authorized Error</string>
+    <string name="person_details_not_found_error">Not Found</string>
+    <string name="person_details_birth_date_label">Birth date: </string>
+    <string name="person_details_death_date_label">Death date: </string>
+    <string name="person_details_role_label">Role: </string>
+    <string name="person_details_awards_label">Awards: </string>
+    <string name="person_details_summary_label">Summary: </string>
+    <string name="person_details_alive_string">%1$s (age %2$d)</string>
+    <string name="person_details_died_string">%1$s (aged %2$d)</string>
+
+    <!--  Settings  -->
+    <string name="settings_theme_dark">Dark theme</string>
 </resources>

@@ -5,9 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.commit
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.bumptech.glide.Glide
 import com.gmail.ivan.morozyk.moviesearch.R
 import com.gmail.ivan.morozyk.moviesearch.data.Title
+import com.gmail.ivan.morozyk.moviesearch.data.service.HttpError
 import com.gmail.ivan.morozyk.moviesearch.databinding.FragmentTitleDetailsBinding
 import com.gmail.ivan.morozyk.moviesearch.extentions.makeGone
 import com.gmail.ivan.morozyk.moviesearch.extentions.makeVisible
@@ -47,8 +50,21 @@ class TitleDetailsFragment : BaseFragment<FragmentTitleDetailsBinding>(),
             (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
             toolbar.setNavigationOnClickListener { parentFragmentManager.popBackStack() }
 
-            adapter = ActorListAdapter { starId -> }
+            adapter = ActorListAdapter { personId ->
+                parentFragmentManager.commit {
+                    setReorderingAllowed(true)
+                    addToBackStack(null)
+                    replace(R.id.fragment_container, PersonDetailsFragment.newInstance(personId))
+                }
+            }
             starListRecycler.adapter = adapter
+
+            starListRecycler.addItemDecoration(
+                DividerItemDecoration(
+                    starListRecycler.context,
+                    DividerItemDecoration.VERTICAL
+                )
+            )
         }
     }
 
@@ -115,18 +131,18 @@ class TitleDetailsFragment : BaseFragment<FragmentTitleDetailsBinding>(),
         }
     }
 
-
-    override fun showInternetError() = with(binding) {
-        titleDetailsDialogText.text = getString(R.string.title_details_no_internet_string)
+    override fun showError(error: HttpError) = with(binding) {
         titleDetailsDialogText.makeVisible()
+        titleDetailsDialogText.text = getString(
+            when (error) {
+                HttpError.InternalServerError -> R.string.title_details_internal_server_error
+                HttpError.NoInternetError -> R.string.title_details_no_internet_string
+                HttpError.NotAuthorizedError -> R.string.title_details_not_authorized_error
+                HttpError.NotFoundError -> R.string.title_details_not_found_error
+                HttpError.UnknownError -> R.string.title_details_unknown_error_string
+            }
+        )
     }
-
-
-    override fun showUnknownError() = with(binding) {
-        titleDetailsDialogText.text = getString(R.string.title_details_unknown_error_string)
-        titleDetailsDialogText.makeVisible()
-    }
-
 
     override fun showProgress() = with(binding) {
         titleDetailsDialogText.makeGone()

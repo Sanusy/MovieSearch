@@ -1,9 +1,9 @@
 package com.gmail.ivan.morozyk.moviesearch.mvp.presenter
 
-import com.github.kittinunf.fuel.core.FuelError
 import com.gmail.ivan.morozyk.moviesearch.data.Title
 import com.gmail.ivan.morozyk.moviesearch.data.TitleDto
 import com.gmail.ivan.morozyk.moviesearch.data.mapper.BaseMapper
+import com.gmail.ivan.morozyk.moviesearch.data.service.HttpErrorMapper
 import com.gmail.ivan.morozyk.moviesearch.data.service.TitleService
 import com.gmail.ivan.morozyk.moviesearch.mvp.contract.QueryType
 import com.gmail.ivan.morozyk.moviesearch.mvp.contract.TitleListContract
@@ -15,7 +15,8 @@ import moxy.presenterScope
 
 class TitleListPresenter(
     private val titleService: TitleService,
-    private val titleMapper: BaseMapper<TitleDto, Title>
+    private val titleMapper: BaseMapper<TitleDto, Title>,
+    private val errorMapper: HttpErrorMapper
 ) :
     MvpPresenter<TitleListContract.View>(), TitleListContract.Presenter {
 
@@ -24,7 +25,7 @@ class TitleListPresenter(
     override fun attachView(view: TitleListContract.View?) {
         super.attachView(view)
         viewState.showProgress()
-        getTitleList(QueryType.MOST_POPULAR_MOVIES)
+        getTitleList(QueryType.TOP_250_MOVIES)
     }
 
     override fun searchTitleByWord(word: String) {
@@ -42,7 +43,7 @@ class TitleListPresenter(
 
                     with(viewState) {
                         if (titlesToShow.isNullOrEmpty()) {
-                            showEmptyContentError()
+                            showEmpty()
                         } else {
                             showTitleList(titlesToShow)
                         }
@@ -50,7 +51,7 @@ class TitleListPresenter(
                     }
                 },
                 failure = {
-                    showError(it)
+                    viewState.showError(errorMapper.mapErrorCode(it.response.statusCode))
                 })
         }
     }
@@ -71,7 +72,7 @@ class TitleListPresenter(
 
                     with(viewState) {
                         if (titlesToShow.isNullOrEmpty()) {
-                            showEmptyContentError()
+                            showEmpty()
                         } else {
                             showTitleList(titlesToShow)
                         }
@@ -79,7 +80,7 @@ class TitleListPresenter(
                     }
                 },
                 failure = {
-                    showError(it)
+                    viewState.showError(errorMapper.mapErrorCode(it.response.statusCode))
                 })
         }
     }
@@ -91,15 +92,6 @@ class TitleListPresenter(
     override fun refresh() = when (query) {
         is Query.GetQuery -> getTitleList((query as Query.GetQuery).type)
         is Query.SearchQuery -> searchTitleByWord((query as Query.SearchQuery).query)
-    }
-
-    private fun showError(error: FuelError) {
-        if (error.response.statusCode == -1) {
-            viewState.showInternetConnectionError()
-        } else {
-            viewState.showUnknownError()
-        }
-        viewState.hideProgress()
     }
 
     private sealed class Query {

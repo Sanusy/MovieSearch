@@ -6,30 +6,22 @@ import moxy.MvpView
 import moxy.viewstate.strategy.AddToEndSingleStrategy
 import moxy.viewstate.strategy.StateStrategyType
 
-interface PersonListContract {
+interface PersonDetailsContract {
 
     @StateStrategyType(AddToEndSingleStrategy::class)
     interface View : MvpView {
 
-        fun showPersons(personList: List<Person>)
+        fun showPerson(person: Person)
 
         fun showError(error: HttpError)
-
-        fun showEmpty()
 
         fun showProgress()
 
         fun hideProgress()
-
-        fun clearSearch()
     }
 
     interface Presenter {
 
-        fun refresh()
-
-        fun searchPerson(query: String)
-
-        fun clearSearchButtonClicked()
+        fun loadPerson(personId: String)
     }
 }

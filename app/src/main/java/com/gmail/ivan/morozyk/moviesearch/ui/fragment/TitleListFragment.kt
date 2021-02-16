@@ -9,7 +9,7 @@ import androidx.core.view.forEach
 import androidx.fragment.app.commit
 import com.gmail.ivan.morozyk.moviesearch.R
 import com.gmail.ivan.morozyk.moviesearch.data.Title
-import com.gmail.ivan.morozyk.moviesearch.data.service.TitleServiceImpl
+import com.gmail.ivan.morozyk.moviesearch.data.service.HttpError
 import com.gmail.ivan.morozyk.moviesearch.databinding.FragmentTitleListBinding
 import com.gmail.ivan.morozyk.moviesearch.extentions.makeGone
 import com.gmail.ivan.morozyk.moviesearch.extentions.makeInvisible
@@ -29,7 +29,7 @@ class TitleListFragment : BaseFragment<FragmentTitleListBinding>(), TitleListCon
     lateinit var presenter: TitleListPresenter
 
     @ProvidePresenter
-    fun providePresenter():TitleListPresenter = get()
+    fun providePresenter(): TitleListPresenter = get()
 
     private lateinit var adapter: TitleAdapter
 
@@ -95,24 +95,23 @@ class TitleListFragment : BaseFragment<FragmentTitleListBinding>(), TitleListCon
         }
     }
 
-    override fun showInternetConnectionError() {
-        with(binding) {
-            noContentText.makeVisible()
-            noContentText.text = getString(R.string.title_list_no_internet_string)
-        }
+    override fun showError(error: HttpError) = with(binding) {
+        noContentText.makeVisible()
+        noContentText.text = getString(
+            when (error) {
+                HttpError.InternalServerError -> R.string.title_list_internal_server_error
+                HttpError.NoInternetError -> R.string.title_list_no_internet_string
+                HttpError.NotAuthorizedError -> R.string.title_list_not_authorized_error
+                HttpError.NotFoundError -> R.string.title_list_not_found_error
+                HttpError.UnknownError -> R.string.title_list_unknown_error_string
+            }
+        )
     }
 
-    override fun showEmptyContentError() {
+    override fun showEmpty() {
         with(binding) {
             noContentText.makeVisible()
             noContentText.text = getString(R.string.title_list_no_content_string)
-        }
-    }
-
-    override fun showUnknownError() {
-        with(binding) {
-            noContentText.makeVisible()
-            noContentText.text = getString(R.string.title_list_unknown_error_string)
         }
     }
 

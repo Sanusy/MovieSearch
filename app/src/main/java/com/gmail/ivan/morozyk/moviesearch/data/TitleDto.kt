@@ -8,7 +8,7 @@ data class TitleDto(
     val title: String,
     var type: String?,
     val year: String?,
-    val image: String,
+    val image: String?,
     val runtimeStr: String?,
     val plot: String?,
     val releaseDate: String?,

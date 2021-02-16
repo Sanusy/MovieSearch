@@ -1,6 +1,7 @@
 package com.gmail.ivan.morozyk.moviesearch.mvp.contract
 
 import com.gmail.ivan.morozyk.moviesearch.data.Title
+import com.gmail.ivan.morozyk.moviesearch.data.service.HttpError
 import moxy.MvpView
 import moxy.viewstate.strategy.AddToEndSingleStrategy
 import moxy.viewstate.strategy.StateStrategyType
@@ -10,11 +11,9 @@ interface TitleListContract {
     @StateStrategyType(AddToEndSingleStrategy::class)
     interface View : MvpView {
 
-        fun showInternetConnectionError()
+        fun showError(error: HttpError)
 
-        fun showEmptyContentError()
-
-        fun showUnknownError()
+        fun showEmpty()
 
         fun showTitleList(titleList: List<Title>)
 

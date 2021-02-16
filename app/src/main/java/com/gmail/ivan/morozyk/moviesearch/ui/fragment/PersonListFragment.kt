@@ -1,12 +1,15 @@
 package com.gmail.ivan.morozyk.moviesearch.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.commit
 import com.gmail.ivan.morozyk.moviesearch.R
 import com.gmail.ivan.morozyk.moviesearch.data.Person
+import com.gmail.ivan.morozyk.moviesearch.data.service.HttpError
 import com.gmail.ivan.morozyk.moviesearch.databinding.FragmentPersonListBinding
 import com.gmail.ivan.morozyk.moviesearch.extentions.makeInvisible
 import com.gmail.ivan.morozyk.moviesearch.extentions.makeVisible
@@ -38,10 +41,18 @@ class PersonListFragment : BaseFragment<FragmentPersonListBinding>(), PersonList
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = PersonListAdapter { personId -> }
+        adapter = PersonListAdapter { personId ->
+            parentFragmentManager.commit {
+                setReorderingAllowed(true)
+                addToBackStack(null)
+                replace(R.id.fragment_container, PersonDetailsFragment.newInstance(personId))
+            }
+        }
 
         with(binding) {
             personRecycler.adapter = adapter
+
+            personListPullToRefresh.isEnabled = false
 
             searchView =
                 personListToolbar.menu.findItem(R.id.search_person).actionView as SearchView
@@ -63,6 +74,8 @@ class PersonListFragment : BaseFragment<FragmentPersonListBinding>(), PersonList
             closeButton?.setOnClickListener {
                 presenter.clearSearchButtonClicked()
             }
+
+            personListPullToRefresh.setOnRefreshListener { presenter.refresh() }
         }
     }
 
@@ -71,15 +84,17 @@ class PersonListFragment : BaseFragment<FragmentPersonListBinding>(), PersonList
         adapter.submitList(personList)
     }
 
-    override fun showInternetError() = with(binding) {
+    override fun showError(error: HttpError) = with(binding) {
         personListDialogText.makeVisible()
-        personListDialogText.text = getString(R.string.person_list_no_internet_string)
-    }
-
-
-    override fun showUnknownError() = with(binding) {
-        personListDialogText.makeVisible()
-        personListDialogText.text = getString(R.string.person_list_unknown_error_string)
+        personListDialogText.text = getString(
+            when (error) {
+                HttpError.InternalServerError -> R.string.person_list_internal_server_error
+                HttpError.NoInternetError -> R.string.person_list_no_internet_string
+                HttpError.NotAuthorizedError -> R.string.person_list_not_authorized_error
+                HttpError.NotFoundError -> R.string.person_list_not_found_error
+                HttpError.UnknownError -> R.string.person_list_unknown_error_string
+            }
+        )
     }
 
     override fun showEmpty() = with(binding) {
@@ -88,7 +103,9 @@ class PersonListFragment : BaseFragment<FragmentPersonListBinding>(), PersonList
     }
 
     override fun showProgress() = with(binding) {
+        Log.d("TAG", "showProgress: ")
         personListPullToRefresh.isRefreshing = false
+        personListPullToRefresh.isEnabled = true
         personListProgress.show()
         personRecycler.makeInvisible()
         personListDialogText.makeInvisible()
@@ -102,6 +119,7 @@ class PersonListFragment : BaseFragment<FragmentPersonListBinding>(), PersonList
         searchView.setQuery("", false)
         with(binding) {
             personListPullToRefresh.isRefreshing = false
+            personListPullToRefresh.isEnabled = false
             personListDialogText.makeVisible()
             personRecycler.makeInvisible()
             personListDialogText.text = getString(R.string.person_list_clear_search)

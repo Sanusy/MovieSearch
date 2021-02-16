@@ -5,53 +5,32 @@ import com.gmail.ivan.morozyk.moviesearch.data.PersonDto
 import com.gmail.ivan.morozyk.moviesearch.data.mapper.BaseMapper
 import com.gmail.ivan.morozyk.moviesearch.data.service.HttpErrorMapper
 import com.gmail.ivan.morozyk.moviesearch.data.service.PersonService
-import com.gmail.ivan.morozyk.moviesearch.mvp.contract.PersonListContract
+import com.gmail.ivan.morozyk.moviesearch.mvp.contract.PersonDetailsContract
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import moxy.MvpPresenter
 import moxy.presenterScope
 
-class PersonListPresenter(
+class PersonDetailsPresenter(
     private val personService: PersonService,
     private val personMapper: BaseMapper<PersonDto, Person>,
     private val errorMapper: HttpErrorMapper
-) : MvpPresenter<PersonListContract.View>(), PersonListContract.Presenter {
+) : MvpPresenter<PersonDetailsContract.View>(), PersonDetailsContract.Presenter {
 
-    private var query: String = ""
-
-    override fun refresh() {
-        if (query.isEmpty()) {
-            viewState.clearSearch()
-        } else {
-            searchPerson(query)
-        }
-    }
-
-    override fun searchPerson(query: String) {
-        this.query = query
+    override fun loadPerson(personId: String) {
         viewState.showProgress()
         presenterScope.launch {
             val result = withContext(Dispatchers.IO) {
-                personService.getPersonList(query)
+                personService.getPersonById(personId)
             }
 
-            result.fold({
-                if (it.results.isNullOrEmpty()) {
-                    viewState.showEmpty()
-                } else {
-                    viewState.showPersons(it.results.map { personDto ->
-                        personMapper.map(personDto)
-                    })
-                }
+            result.fold(success = {
+                viewState.showPerson(personMapper.map(it))
             }, failure = {
                 viewState.showError(errorMapper.mapErrorCode(it.response.statusCode))
-            }).also { viewState.hideProgress() }
+            })
+                .also { viewState.hideProgress() }
         }
-
-    }
-
-    override fun clearSearchButtonClicked() {
-        viewState.clearSearch()
     }
 }
