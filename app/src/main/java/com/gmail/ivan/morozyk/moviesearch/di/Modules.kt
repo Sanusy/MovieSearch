@@ -1,18 +1,29 @@
 package com.gmail.ivan.morozyk.moviesearch.di
 
+import com.gmail.ivan.morozyk.moviesearch.SharedPrefHelper
 import com.gmail.ivan.morozyk.moviesearch.data.Person
 import com.gmail.ivan.morozyk.moviesearch.data.PersonDto
 import com.gmail.ivan.morozyk.moviesearch.data.Title
 import com.gmail.ivan.morozyk.moviesearch.data.TitleDto
-import com.gmail.ivan.morozyk.moviesearch.data.mapper.BaseMapper
-import com.gmail.ivan.morozyk.moviesearch.data.mapper.PersonDtoMapper
-import com.gmail.ivan.morozyk.moviesearch.data.mapper.PersonDtoWithTitlesMapper
-import com.gmail.ivan.morozyk.moviesearch.data.mapper.TitleDtoMapper
-import com.gmail.ivan.morozyk.moviesearch.data.service.*
-import com.gmail.ivan.morozyk.moviesearch.mvp.contract.ThemeStorage
-import com.gmail.ivan.morozyk.moviesearch.mvp.presenter.*
+import com.gmail.ivan.morozyk.moviesearch.data.mapper.*
+import com.gmail.ivan.morozyk.moviesearch.data.service.PersonService
+import com.gmail.ivan.morozyk.moviesearch.data.service.PersonServiceImpl
+import com.gmail.ivan.morozyk.moviesearch.data.service.TitleService
+import com.gmail.ivan.morozyk.moviesearch.data.service.TitleServiceImpl
+import com.gmail.ivan.morozyk.moviesearch.mvp.presenter.PersonDetailsPresenter
+import com.gmail.ivan.morozyk.moviesearch.mvp.presenter.PersonListPresenter
+import com.gmail.ivan.morozyk.moviesearch.mvp.presenter.SettingsPresenter
+import com.gmail.ivan.morozyk.moviesearch.mvp.presenter.TitleDetailsPresenter
+import com.gmail.ivan.morozyk.moviesearch.mvvm.Resource
+import com.gmail.ivan.morozyk.moviesearch.mvvm.viewmodel.TitleListViewModel
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
+
+val localStorageModule = module {
+    single { SharedPrefHelper(androidContext()) }
+}
 
 val servicesModule = module {
     single<TitleService> { TitleServiceImpl() }
@@ -35,29 +46,38 @@ val mappersModule = module {
             get(named(TITLE_DTO_MAPPER))
         )
     }
-    single<HttpErrorMapper> { FuelHttpErrorMapper() }
+    single<BaseMapper<Int, HttpError>>(named(ERROR_MAPPER)) { FuelHttpErrorMapper() }
+    single<BaseMapper<Int, Resource.HttpError<Any>>>(named(ERROR_MVVM_MAPPER)) { FuelWithMVVMErrorMapper() }
 }
 
 val titleListModule = module {
-    factory { TitleListPresenter(get(), get(named(TITLE_DTO_MAPPER)), get()) }
+    viewModel { TitleListViewModel(get(), get(named(TITLE_DTO_MAPPER)), get(named(ERROR_MVVM_MAPPER))) }
 }
 
 val titleDetailsModule = module {
-    factory { TitleDetailsPresenter(get(), get(named(TITLE_DTO_MAPPER)), get()) }
+    factory { TitleDetailsPresenter(get(), get(named(TITLE_DTO_MAPPER)), get(named(ERROR_MAPPER))) }
 }
 
 val personListModule = module {
-    factory { PersonListPresenter(get(), get(named(PERSON_DTO_MAPPER)), get()) }
+    factory { PersonListPresenter(get(), get(named(PERSON_DTO_MAPPER)), get(named(ERROR_MAPPER))) }
 }
 
 val personDetailsModule = module {
-    factory { PersonDetailsPresenter(get(), get(named(PERSON_WITH_TITLES_DTO_MAPPER)), get()) }
+    factory {
+        PersonDetailsPresenter(
+            get(),
+            get(named(PERSON_WITH_TITLES_DTO_MAPPER)),
+            get(named(ERROR_MAPPER))
+        )
+    }
 }
 
 val settingsModule = module {
-    factory { (themeStorage: ThemeStorage) -> SettingsPresenter(themeStorage) }
+    factory { SettingsPresenter(get()) }
 }
 
 private const val TITLE_DTO_MAPPER = "Title Dto Mapper"
 private const val PERSON_DTO_MAPPER = "Person Dto Mapper"
 private const val PERSON_WITH_TITLES_DTO_MAPPER = "Person With titles Dto mapper"
+private const val ERROR_MAPPER = "error mapper"
+private const val ERROR_MVVM_MAPPER = "error mvvm mapper"

@@ -10,17 +10,16 @@ interface SettingsContract {
     interface View : MvpView {
 
         fun applyTheme(theme: Theme)
+
+        fun showCurrentTheme(theme: Theme)
     }
 
     interface Presenter {
 
+        fun getCurrentTheme()
+
         fun onSwitchThemeClicked(dark: Boolean)
     }
-}
-
-interface ThemeStorage {
-
-    fun storeTheme(dark: Boolean)
 }
 
 enum class Theme {

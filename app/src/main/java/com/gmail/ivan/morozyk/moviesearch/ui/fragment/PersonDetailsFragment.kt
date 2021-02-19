@@ -10,12 +10,13 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import com.bumptech.glide.Glide
 import com.gmail.ivan.morozyk.moviesearch.R
 import com.gmail.ivan.morozyk.moviesearch.data.Person
-import com.gmail.ivan.morozyk.moviesearch.data.service.HttpError
+import com.gmail.ivan.morozyk.moviesearch.data.mapper.HttpError
 import com.gmail.ivan.morozyk.moviesearch.databinding.FragmentPersonDetailsBinding
 import com.gmail.ivan.morozyk.moviesearch.extentions.makeGone
 import com.gmail.ivan.morozyk.moviesearch.extentions.makeVisible
 import com.gmail.ivan.morozyk.moviesearch.mvp.contract.PersonDetailsContract
 import com.gmail.ivan.morozyk.moviesearch.mvp.presenter.PersonDetailsPresenter
+import com.gmail.ivan.morozyk.moviesearch.ui.activity.ItemSelected
 import com.gmail.ivan.morozyk.moviesearch.ui.adapter.PersonCastMoviesAdapter
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
@@ -68,6 +69,7 @@ class PersonDetailsFragment : BaseFragment<FragmentPersonDetailsBinding>(),
     override fun onStart() {
         super.onStart()
 
+        requireMainActivity().setSelectedItem(ItemSelected.PERSONS)
         presenter.loadPerson(requireArguments().getString(PERSON_ID)!!)
     }
 

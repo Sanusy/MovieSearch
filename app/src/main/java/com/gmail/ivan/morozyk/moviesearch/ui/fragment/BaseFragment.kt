@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
+import com.gmail.ivan.morozyk.moviesearch.ui.activity.MainActivity
 import moxy.MvpAppCompatFragment
 
 abstract class BaseFragment<B : ViewBinding> : MvpAppCompatFragment() {
@@ -31,4 +32,6 @@ abstract class BaseFragment<B : ViewBinding> : MvpAppCompatFragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    fun requireMainActivity() = requireActivity() as MainActivity
 }

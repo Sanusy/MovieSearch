@@ -1,7 +1,7 @@
 package com.gmail.ivan.morozyk.moviesearch.mvp.contract
 
 import com.gmail.ivan.morozyk.moviesearch.data.Person
-import com.gmail.ivan.morozyk.moviesearch.data.service.HttpError
+import com.gmail.ivan.morozyk.moviesearch.data.mapper.HttpError
 import moxy.MvpView
 import moxy.viewstate.strategy.AddToEndSingleStrategy
 import moxy.viewstate.strategy.StateStrategyType

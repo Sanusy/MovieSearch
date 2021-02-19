@@ -3,7 +3,7 @@ package com.gmail.ivan.morozyk.moviesearch.mvp.presenter
 import com.gmail.ivan.morozyk.moviesearch.data.Title
 import com.gmail.ivan.morozyk.moviesearch.data.TitleDto
 import com.gmail.ivan.morozyk.moviesearch.data.mapper.BaseMapper
-import com.gmail.ivan.morozyk.moviesearch.data.service.HttpErrorMapper
+import com.gmail.ivan.morozyk.moviesearch.data.mapper.HttpError
 import com.gmail.ivan.morozyk.moviesearch.data.service.TitleService
 import com.gmail.ivan.morozyk.moviesearch.mvp.contract.TitleDetailsContract
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +15,7 @@ import moxy.presenterScope
 class TitleDetailsPresenter(
     private val titleService: TitleService,
     private val mapper: BaseMapper<TitleDto, Title>,
-    private val errorMapper: HttpErrorMapper
+    private val errorMapper: BaseMapper<Int, HttpError>
 ) : MvpPresenter<TitleDetailsContract.View>(),
     TitleDetailsContract.Presenter {
 
@@ -29,7 +29,7 @@ class TitleDetailsPresenter(
             result.fold(success = {
                 viewState.showTitle(mapper.map(it))
             }, failure = {
-                viewState.showError(errorMapper.mapErrorCode(it.response.statusCode))
+                viewState.showError(errorMapper.map(it.response.statusCode))
             }).also {
                 viewState.hideProgress()
             }

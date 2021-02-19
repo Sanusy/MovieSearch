@@ -10,21 +10,19 @@ import com.gmail.ivan.morozyk.moviesearch.App
 import com.gmail.ivan.morozyk.moviesearch.databinding.FragmentSettingsBinding
 import com.gmail.ivan.morozyk.moviesearch.mvp.contract.SettingsContract
 import com.gmail.ivan.morozyk.moviesearch.mvp.contract.Theme
-import com.gmail.ivan.morozyk.moviesearch.mvp.contract.ThemeStorage
 import com.gmail.ivan.morozyk.moviesearch.mvp.presenter.SettingsPresenter
+import com.gmail.ivan.morozyk.moviesearch.ui.activity.ItemSelected
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 import org.koin.android.ext.android.get
-import org.koin.core.parameter.parametersOf
 
-class SettingsFragment : BaseFragment<FragmentSettingsBinding>(), SettingsContract.View,
-    ThemeStorage {
+class SettingsFragment : BaseFragment<FragmentSettingsBinding>(), SettingsContract.View {
 
     @InjectPresenter
     lateinit var presenter: SettingsPresenter
 
     @ProvidePresenter
-    fun providePresenter(): SettingsPresenter = get { parametersOf(this) }
+    fun providePresenter(): SettingsPresenter = get()
 
     override fun inflateBinding(
         inflater: LayoutInflater,
@@ -45,6 +43,13 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>(), SettingsContra
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        requireMainActivity().setSelectedItem(ItemSelected.SETTINGS)
+        presenter.getCurrentTheme()
+    }
+
     override fun applyTheme(theme: Theme) {
         AppCompatDelegate.setDefaultNightMode(
             when (theme) {
@@ -54,9 +59,11 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>(), SettingsContra
         )
     }
 
-    override fun storeTheme(dark: Boolean) {
-        requireContext().getSharedPreferences(App::class.qualifiedName, MODE_PRIVATE).edit()
-            .putBoolean(Theme::class.simpleName, dark).apply()
+    override fun showCurrentTheme(theme: Theme) {
+        binding.settingsThemeSwitch.isChecked = when (theme) {
+            Theme.LIGHT -> false
+            Theme.DARK -> true
+        }
     }
 
     companion object {

@@ -7,27 +7,23 @@ import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import com.github.kittinunf.fuel.core.FuelManager
 import com.gmail.ivan.morozyk.moviesearch.di.*
 import com.gmail.ivan.morozyk.moviesearch.mvp.contract.Theme
+import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 
 class App : Application() {
 
+    private val sharedPrefHelper: SharedPrefHelper by inject()
+
     override fun onCreate() {
         super.onCreate()
-        AppCompatDelegate.setDefaultNightMode(
-            if (getSharedPreferences(App::class.qualifiedName, MODE_PRIVATE).getBoolean(
-                    Theme::class.simpleName, false
-                )
-            ) MODE_NIGHT_YES else MODE_NIGHT_NO
-        )
-
-        FuelManager.instance.basePath = "https://imdb-api.com/en/API"
 
         startKoin {
             androidLogger()
             androidContext(this@App)
             modules(
+                localStorageModule,
                 servicesModule,
                 mappersModule,
                 titleListModule,
@@ -37,5 +33,14 @@ class App : Application() {
                 settingsModule
             )
         }
+
+        AppCompatDelegate.setDefaultNightMode(
+            when (sharedPrefHelper.getTheme()) {
+                Theme.LIGHT -> MODE_NIGHT_NO
+                Theme.DARK -> MODE_NIGHT_YES
+            }
+        )
+
+        FuelManager.instance.basePath = "https://imdb-api.com/en/API"
     }
 }

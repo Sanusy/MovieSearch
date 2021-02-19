@@ -3,7 +3,7 @@ package com.gmail.ivan.morozyk.moviesearch.mvp.presenter
 import com.gmail.ivan.morozyk.moviesearch.data.Person
 import com.gmail.ivan.morozyk.moviesearch.data.PersonDto
 import com.gmail.ivan.morozyk.moviesearch.data.mapper.BaseMapper
-import com.gmail.ivan.morozyk.moviesearch.data.service.HttpErrorMapper
+import com.gmail.ivan.morozyk.moviesearch.data.mapper.HttpError
 import com.gmail.ivan.morozyk.moviesearch.data.service.PersonService
 import com.gmail.ivan.morozyk.moviesearch.mvp.contract.PersonListContract
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +15,7 @@ import moxy.presenterScope
 class PersonListPresenter(
     private val personService: PersonService,
     private val personMapper: BaseMapper<PersonDto, Person>,
-    private val errorMapper: HttpErrorMapper
+    private val errorMapper: BaseMapper<Int, HttpError>
 ) : MvpPresenter<PersonListContract.View>(), PersonListContract.Presenter {
 
     private var query: String = ""
@@ -45,7 +45,7 @@ class PersonListPresenter(
                     })
                 }
             }, failure = {
-                viewState.showError(errorMapper.mapErrorCode(it.response.statusCode))
+                viewState.showError(errorMapper.map(it.response.statusCode))
             }).also { viewState.hideProgress() }
         }
 

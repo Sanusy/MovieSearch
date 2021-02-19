@@ -10,12 +10,13 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import com.bumptech.glide.Glide
 import com.gmail.ivan.morozyk.moviesearch.R
 import com.gmail.ivan.morozyk.moviesearch.data.Title
-import com.gmail.ivan.morozyk.moviesearch.data.service.HttpError
+import com.gmail.ivan.morozyk.moviesearch.data.mapper.HttpError
 import com.gmail.ivan.morozyk.moviesearch.databinding.FragmentTitleDetailsBinding
 import com.gmail.ivan.morozyk.moviesearch.extentions.makeGone
 import com.gmail.ivan.morozyk.moviesearch.extentions.makeVisible
 import com.gmail.ivan.morozyk.moviesearch.mvp.contract.TitleDetailsContract
 import com.gmail.ivan.morozyk.moviesearch.mvp.presenter.TitleDetailsPresenter
+import com.gmail.ivan.morozyk.moviesearch.ui.activity.ItemSelected
 import com.gmail.ivan.morozyk.moviesearch.ui.adapter.ActorListAdapter
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
@@ -71,6 +72,7 @@ class TitleDetailsFragment : BaseFragment<FragmentTitleDetailsBinding>(),
     override fun onStart() {
         super.onStart()
 
+        requireMainActivity().setSelectedItem(ItemSelected.TITLES)
         presenter.loadTitle(requireArguments().getString(TITLE_ID)!!)
     }
 

@@ -15,7 +15,6 @@
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/person_list_toolbar"
-            style="@style/Widget.MaterialComponents.Toolbar.Primary"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:menu="@menu/menu_person_list"

@@ -9,12 +9,13 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.commit
 import com.gmail.ivan.morozyk.moviesearch.R
 import com.gmail.ivan.morozyk.moviesearch.data.Person
-import com.gmail.ivan.morozyk.moviesearch.data.service.HttpError
+import com.gmail.ivan.morozyk.moviesearch.data.mapper.HttpError
 import com.gmail.ivan.morozyk.moviesearch.databinding.FragmentPersonListBinding
 import com.gmail.ivan.morozyk.moviesearch.extentions.makeInvisible
 import com.gmail.ivan.morozyk.moviesearch.extentions.makeVisible
 import com.gmail.ivan.morozyk.moviesearch.mvp.contract.PersonListContract
 import com.gmail.ivan.morozyk.moviesearch.mvp.presenter.PersonListPresenter
+import com.gmail.ivan.morozyk.moviesearch.ui.activity.ItemSelected
 import com.gmail.ivan.morozyk.moviesearch.ui.adapter.PersonListAdapter
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
@@ -79,6 +80,12 @@ class PersonListFragment : BaseFragment<FragmentPersonListBinding>(), PersonList
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        requireMainActivity().setSelectedItem(ItemSelected.PERSONS)
+    }
+
     override fun showPersons(personList: List<Person>) {
         binding.personRecycler.makeVisible()
         adapter.submitList(personList)
@@ -103,7 +110,6 @@ class PersonListFragment : BaseFragment<FragmentPersonListBinding>(), PersonList
     }
 
     override fun showProgress() = with(binding) {
-        Log.d("TAG", "showProgress: ")
         personListPullToRefresh.isRefreshing = false
         personListPullToRefresh.isEnabled = true
         personListProgress.show()

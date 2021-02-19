@@ -3,7 +3,7 @@ package com.gmail.ivan.morozyk.moviesearch.mvp.presenter
 import com.gmail.ivan.morozyk.moviesearch.data.Person
 import com.gmail.ivan.morozyk.moviesearch.data.PersonDto
 import com.gmail.ivan.morozyk.moviesearch.data.mapper.BaseMapper
-import com.gmail.ivan.morozyk.moviesearch.data.service.HttpErrorMapper
+import com.gmail.ivan.morozyk.moviesearch.data.mapper.HttpError
 import com.gmail.ivan.morozyk.moviesearch.data.service.PersonService
 import com.gmail.ivan.morozyk.moviesearch.mvp.contract.PersonDetailsContract
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +15,7 @@ import moxy.presenterScope
 class PersonDetailsPresenter(
     private val personService: PersonService,
     private val personMapper: BaseMapper<PersonDto, Person>,
-    private val errorMapper: HttpErrorMapper
+    private val errorMapper: BaseMapper<Int, HttpError>
 ) : MvpPresenter<PersonDetailsContract.View>(), PersonDetailsContract.Presenter {
 
     override fun loadPerson(personId: String) {
@@ -28,7 +28,7 @@ class PersonDetailsPresenter(
             result.fold(success = {
                 viewState.showPerson(personMapper.map(it))
             }, failure = {
-                viewState.showError(errorMapper.mapErrorCode(it.response.statusCode))
+                viewState.showError(errorMapper.map(it.response.statusCode))
             })
                 .also { viewState.hideProgress() }
         }
