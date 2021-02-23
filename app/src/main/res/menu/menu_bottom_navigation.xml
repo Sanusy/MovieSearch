@@ -2,19 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/titles_menu_item"
+        android:id="@+id/titleListFragment"
         android:enabled="true"
         android:icon="@drawable/icon_title"
         android:title="@string/bottom_navigation_titles" />
 
     <item
-        android:id="@+id/persons_menu_item"
+        android:id="@+id/personListFragment"
         android:enabled="true"
         android:icon="@drawable/icon_person"
         android:title="@string/bottom_navigation_persons" />
 
     <item
-        android:id="@+id/settings_menu_item"
+        android:id="@+id/settingsFragment"
         android:enabled="true"
         android:icon="@drawable/icon_setting"
         android:title="@string/bottom_navigation_settings" />

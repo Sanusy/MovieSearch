@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_graph"
+    app:startDestination="@id/titleListFragment">
+
+    <fragment
+        android:id="@+id/titleListFragment"
+        android:name="com.gmail.ivan.morozyk.moviesearch.ui.fragment.TitleListFragment"
+        android:label="TitleListFragment"
+        tools:layout="@layout/fragment_title_list">
+        <action
+            android:id="@+id/action_titleListFragment_to_titleDetailsFragment"
+            app:destination="@id/titleDetailsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out_left" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/titleDetailsFragment"
+        android:name="com.gmail.ivan.morozyk.moviesearch.ui.fragment.TitleDetailsFragment"
+        android:label="TitleDetailsFragment"
+        tools:layout="@layout/fragment_title_details">
+        <action
+            android:id="@+id/action_titleDetailsFragment_to_personDetailsFragment"
+            app:destination="@id/personDetailsFragment"
+            app:enterAnim="@anim/slide_in_right" />
+        <argument
+            android:name="titleId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/personListFragment"
+        android:name="com.gmail.ivan.morozyk.moviesearch.ui.fragment.PersonListFragment"
+        android:label="PersonListFragment"
+        tools:layout="@layout/fragment_person_list">
+        <action
+            android:id="@+id/action_personListFragment_to_personDetailsFragment"
+            app:destination="@id/personDetailsFragment"
+            app:enterAnim="@anim/slide_in_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/personDetailsFragment"
+        android:name="com.gmail.ivan.morozyk.moviesearch.ui.fragment.PersonDetailsFragment"
+        android:label="PersonDetailsFragment"
+        tools:layout="@layout/fragment_person_details">
+        <action
+            android:id="@+id/action_personDetailsFragment_to_titleDetailsFragment"
+            app:destination="@id/titleDetailsFragment"
+            app:enterAnim="@anim/slide_in_right" />
+        <argument
+            android:name="personId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.gmail.ivan.morozyk.moviesearch.ui.fragment.SettingsFragment"
+        android:label="SettingsFragment"
+        tools:layout="@layout/fragment_settings" />
+
+</navigation>

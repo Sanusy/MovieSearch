@@ -65,8 +65,4 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>(), SettingsContra
             Theme.DARK -> true
         }
     }
-
-    companion object {
-        fun newInstance() = SettingsFragment()
-    }
 }

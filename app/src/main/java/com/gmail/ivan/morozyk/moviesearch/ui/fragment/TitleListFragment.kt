@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.forEach
-import androidx.fragment.app.commit
 import com.gmail.ivan.morozyk.moviesearch.R
 import com.gmail.ivan.morozyk.moviesearch.data.Title
 import com.gmail.ivan.morozyk.moviesearch.databinding.FragmentTitleListBinding
@@ -61,13 +60,7 @@ class TitleListFragment : BaseFragment<FragmentTitleListBinding>() {
                 }
             }
 
-            adapter = TitleAdapter { titleId ->
-                parentFragmentManager.commit {
-                    setReorderingAllowed(true)
-                    addToBackStack(null)
-                    replace(R.id.fragment_container, TitleDetailsFragment.newInstance(titleId))
-                }
-            }
+            adapter = TitleAdapter()
 
             titleRecycler.adapter = adapter
             titleListPullToRefresh.setOnRefreshListener { viewModel.refresh() }
@@ -158,9 +151,5 @@ class TitleListFragment : BaseFragment<FragmentTitleListBinding>() {
     private fun hideProgress() = with(binding) {
         titleListPullToRefresh.isEnabled = true
         titleLoadingProgress.hide()
-    }
-
-    companion object {
-        fun newInstance() = TitleListFragment()
     }
 }

@@ -5,7 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.commit
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.bumptech.glide.Glide
 import com.gmail.ivan.morozyk.moviesearch.R
@@ -21,7 +24,6 @@ import com.gmail.ivan.morozyk.moviesearch.ui.adapter.PersonCastMoviesAdapter
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 import org.koin.android.ext.android.get
-
 
 class PersonDetailsFragment : BaseFragment<FragmentPersonDetailsBinding>(),
     PersonDetailsContract.View {
@@ -43,18 +45,13 @@ class PersonDetailsFragment : BaseFragment<FragmentPersonDetailsBinding>(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        adapter = PersonCastMoviesAdapter { titleId ->
-            parentFragmentManager.commit {
-                setReorderingAllowed(true)
-                addToBackStack(null)
-                replace(R.id.fragment_container, TitleDetailsFragment.newInstance(titleId))
-            }
-        }
+        adapter = PersonCastMoviesAdapter()
 
         with(binding) {
             (requireActivity() as AppCompatActivity).setSupportActionBar(personDetailsToolbar)
-            personDetailsToolbar.setNavigationOnClickListener { parentFragmentManager.popBackStack() }
+            val navController = findNavController()
+            val appBarConfiguration = AppBarConfiguration(navController.graph)
+            personDetailsToolbar.setupWithNavController(navController, appBarConfiguration)
 
             personDetailsCastMoviesRecycler.adapter = adapter
             personDetailsCastMoviesRecycler.addItemDecoration(
@@ -70,7 +67,7 @@ class PersonDetailsFragment : BaseFragment<FragmentPersonDetailsBinding>(),
         super.onStart()
 
         requireMainActivity().setSelectedItem(ItemSelected.PERSONS)
-        presenter.loadPerson(requireArguments().getString(PERSON_ID)!!)
+        presenter.loadPerson(navArgs<PersonDetailsFragmentArgs>().value.personId)
     }
 
     override fun showPerson(person: Person) = with(binding) {
@@ -145,21 +142,7 @@ class PersonDetailsFragment : BaseFragment<FragmentPersonDetailsBinding>(),
         personDetailsProgress.show()
     }
 
-
     override fun hideProgress() {
         binding.personDetailsProgress.hide()
-    }
-
-    companion object {
-
-        private const val PERSON_ID = "person_id"
-
-        fun newInstance(personId: String): PersonDetailsFragment {
-            val args = Bundle()
-            args.putString(PERSON_ID, personId)
-            val fragment = PersonDetailsFragment()
-            fragment.arguments = args
-            return fragment
-        }
     }
 }

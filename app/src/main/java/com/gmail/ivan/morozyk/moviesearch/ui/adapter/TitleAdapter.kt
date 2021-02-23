@@ -2,6 +2,7 @@ package com.gmail.ivan.morozyk.moviesearch.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.gmail.ivan.morozyk.moviesearch.R
@@ -9,9 +10,9 @@ import com.gmail.ivan.morozyk.moviesearch.data.Title
 import com.gmail.ivan.morozyk.moviesearch.databinding.ItemTitleBinding
 import com.gmail.ivan.morozyk.moviesearch.extentions.makeGone
 import com.gmail.ivan.morozyk.moviesearch.extentions.makeInvisible
+import com.gmail.ivan.morozyk.moviesearch.ui.fragment.TitleListFragmentDirections
 
-class TitleAdapter(private val onClickAction: (String) -> Unit) :
-    RecyclerView.Adapter<TitleAdapter.TitleHolder>() {
+class TitleAdapter : RecyclerView.Adapter<TitleAdapter.TitleHolder>() {
 
     private val titleList = mutableListOf<Title>()
 
@@ -36,7 +37,13 @@ class TitleAdapter(private val onClickAction: (String) -> Unit) :
 
         fun bind(title: Title) {
             with(binding) {
-                root.setOnClickListener { onClickAction(title.id) }
+                root.setOnClickListener {
+                    val action =
+                        TitleListFragmentDirections.actionTitleListFragmentToTitleDetailsFragment(
+                            title.id
+                        )
+                    root.findNavController().navigate(action)
+                }
 
                 titleNameText.text = title.name
 

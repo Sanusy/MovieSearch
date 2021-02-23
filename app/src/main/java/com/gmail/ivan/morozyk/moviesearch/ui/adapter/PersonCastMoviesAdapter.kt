@@ -2,14 +2,16 @@ package com.gmail.ivan.morozyk.moviesearch.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.gmail.ivan.morozyk.moviesearch.data.Title
 import com.gmail.ivan.morozyk.moviesearch.databinding.ItemCastTitleBinding
 import com.gmail.ivan.morozyk.moviesearch.extentions.makeGone
+import com.gmail.ivan.morozyk.moviesearch.ui.fragment.PersonDetailsFragmentDirections
 
-class PersonCastMoviesAdapter(private val onTitleClicked: (String) -> Unit) :
+class PersonCastMoviesAdapter :
     ListAdapter<Title, PersonCastMoviesAdapter.TitleViewHolder>(
         titleDiffUtil
     ) {
@@ -26,7 +28,13 @@ class PersonCastMoviesAdapter(private val onTitleClicked: (String) -> Unit) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(title: Title) = with(binding) {
-            root.setOnClickListener { onTitleClicked(title.id) }
+            root.setOnClickListener {
+                val action =
+                    PersonDetailsFragmentDirections.actionPersonDetailsFragmentToTitleDetailsFragment(
+                        title.id
+                    )
+                root.findNavController().navigate(action)
+            }
             itemCastMovieTitle.text = title.name
 
             if (title.year.isNullOrEmpty()) {

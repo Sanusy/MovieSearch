@@ -1,12 +1,10 @@
 package com.gmail.ivan.morozyk.moviesearch.ui.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
-import androidx.fragment.app.commit
 import com.gmail.ivan.morozyk.moviesearch.R
 import com.gmail.ivan.morozyk.moviesearch.data.Person
 import com.gmail.ivan.morozyk.moviesearch.data.mapper.HttpError
@@ -42,13 +40,7 @@ class PersonListFragment : BaseFragment<FragmentPersonListBinding>(), PersonList
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = PersonListAdapter { personId ->
-            parentFragmentManager.commit {
-                setReorderingAllowed(true)
-                addToBackStack(null)
-                replace(R.id.fragment_container, PersonDetailsFragment.newInstance(personId))
-            }
-        }
+        adapter = PersonListAdapter()
 
         with(binding) {
             personRecycler.adapter = adapter
@@ -130,9 +122,5 @@ class PersonListFragment : BaseFragment<FragmentPersonListBinding>(), PersonList
             personRecycler.makeInvisible()
             personListDialogText.text = getString(R.string.person_list_clear_search)
         }
-    }
-
-    companion object {
-        fun newInstance() = PersonListFragment()
     }
 }

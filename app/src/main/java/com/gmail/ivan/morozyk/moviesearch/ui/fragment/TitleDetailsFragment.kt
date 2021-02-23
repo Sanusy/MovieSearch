@@ -5,7 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.commit
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.bumptech.glide.Glide
 import com.gmail.ivan.morozyk.moviesearch.R
@@ -49,15 +52,11 @@ class TitleDetailsFragment : BaseFragment<FragmentTitleDetailsBinding>(),
 
         with(binding) {
             (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
-            toolbar.setNavigationOnClickListener { parentFragmentManager.popBackStack() }
+            val navController = findNavController()
+            val appBarConfiguration = AppBarConfiguration(navController.graph)
+            toolbar.setupWithNavController(navController, appBarConfiguration)
 
-            adapter = ActorListAdapter { personId ->
-                parentFragmentManager.commit {
-                    setReorderingAllowed(true)
-                    addToBackStack(null)
-                    replace(R.id.fragment_container, PersonDetailsFragment.newInstance(personId))
-                }
-            }
+            adapter = ActorListAdapter()
             starListRecycler.adapter = adapter
 
             starListRecycler.addItemDecoration(
@@ -73,7 +72,7 @@ class TitleDetailsFragment : BaseFragment<FragmentTitleDetailsBinding>(),
         super.onStart()
 
         requireMainActivity().setSelectedItem(ItemSelected.TITLES)
-        presenter.loadTitle(requireArguments().getString(TITLE_ID)!!)
+        presenter.loadTitle(navArgs<TitleDetailsFragmentArgs>().value.titleId)
     }
 
     override fun showTitle(title: Title) = with(binding) {
@@ -151,23 +150,7 @@ class TitleDetailsFragment : BaseFragment<FragmentTitleDetailsBinding>(),
         titleDetailsProgress.show()
     }
 
-
     override fun hideProgress() {
         binding.titleDetailsProgress.hide()
-    }
-
-    companion object {
-
-        private const val TITLE_ID = "title_id"
-
-        fun newInstance(titleId: String): TitleDetailsFragment {
-            val args = Bundle()
-            args.putString(TITLE_ID, titleId)
-
-            val fragment = TitleDetailsFragment()
-            fragment.arguments = args
-
-            return fragment
-        }
     }
 }
