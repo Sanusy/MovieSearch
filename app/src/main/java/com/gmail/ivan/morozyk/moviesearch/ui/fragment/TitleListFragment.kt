@@ -60,7 +60,7 @@ class TitleListFragment : BaseFragment<FragmentTitleListBinding>() {
                 }
             }
 
-            adapter = TitleAdapter()
+            adapter = TitleAdapter{ viewModel.onTitleClicked(it) }
 
             titleRecycler.adapter = adapter
             titleListPullToRefresh.setOnRefreshListener { viewModel.refresh() }

@@ -23,5 +23,7 @@ interface PersonDetailsContract {
     interface Presenter {
 
         fun loadPerson(personId: String)
+
+        fun onTitleClicked(titleId: String)
     }
 }

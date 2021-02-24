@@ -9,6 +9,8 @@ import com.gmail.ivan.morozyk.moviesearch.data.TitleDto
 import com.gmail.ivan.morozyk.moviesearch.data.mapper.BaseMapper
 import com.gmail.ivan.morozyk.moviesearch.data.service.TitleService
 import com.gmail.ivan.morozyk.moviesearch.mvvm.Resource
+import com.gmail.ivan.morozyk.moviesearch.navigation.Action
+import com.gmail.ivan.morozyk.moviesearch.navigation.Router
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -16,7 +18,8 @@ import kotlinx.coroutines.withContext
 class TitleListViewModel(
     private val titleService: TitleService,
     private val titleMapper: BaseMapper<TitleDto, Title>,
-    private val errorMapper: BaseMapper<Int, Resource.HttpError<List<Title>>>
+    private val errorMapper: BaseMapper<Int, Resource.HttpError<List<Title>>>,
+    private val router: Router
 ) : ViewModel() {
 
     private val _titleData = MutableLiveData<Resource<List<Title>>>()
@@ -76,6 +79,10 @@ class TitleListViewModel(
             is Query.GetQuery -> getTitleList((query as Query.GetQuery).type)
             is Query.SearchQuery -> searchTitleByWord((query as Query.SearchQuery).query)
         }
+    }
+
+    fun onTitleClicked(titleId: String) {
+        router.navigate(Action.FromTitleListToTitleDetails(titleId))
     }
 
     private sealed class Query {

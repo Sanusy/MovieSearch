@@ -23,6 +23,7 @@ class App : Application() {
             androidLogger()
             androidContext(this@App)
             modules(
+                navigationModule,
                 localStorageModule,
                 servicesModule,
                 mappersModule,

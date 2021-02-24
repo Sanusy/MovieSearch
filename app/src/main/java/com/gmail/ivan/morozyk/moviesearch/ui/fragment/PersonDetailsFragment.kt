@@ -34,6 +34,8 @@ class PersonDetailsFragment : BaseFragment<FragmentPersonDetailsBinding>(),
     @ProvidePresenter
     fun providePresenter(): PersonDetailsPresenter = get()
 
+    private val args: PersonDetailsFragmentArgs by navArgs()
+
     private lateinit var adapter: PersonCastMoviesAdapter
 
     override fun inflateBinding(
@@ -45,7 +47,7 @@ class PersonDetailsFragment : BaseFragment<FragmentPersonDetailsBinding>(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = PersonCastMoviesAdapter()
+        adapter = PersonCastMoviesAdapter { presenter.onTitleClicked(it) }
 
         with(binding) {
             (requireActivity() as AppCompatActivity).setSupportActionBar(personDetailsToolbar)
@@ -67,7 +69,7 @@ class PersonDetailsFragment : BaseFragment<FragmentPersonDetailsBinding>(),
         super.onStart()
 
         requireMainActivity().setSelectedItem(ItemSelected.PERSONS)
-        presenter.loadPerson(navArgs<PersonDetailsFragmentArgs>().value.personId)
+        presenter.loadPerson(args.personId)
     }
 
     override fun showPerson(person: Person) = with(binding) {

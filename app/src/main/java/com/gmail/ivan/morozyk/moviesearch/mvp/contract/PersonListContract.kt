@@ -31,5 +31,7 @@ interface PersonListContract {
         fun searchPerson(query: String)
 
         fun clearSearchButtonClicked()
+
+        fun onPersonClicked(personId: String)
     }
 }

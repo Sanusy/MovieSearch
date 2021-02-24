@@ -2,7 +2,6 @@ package com.gmail.ivan.morozyk.moviesearch.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -10,10 +9,9 @@ import com.bumptech.glide.Glide
 import com.gmail.ivan.morozyk.moviesearch.R
 import com.gmail.ivan.morozyk.moviesearch.data.Person
 import com.gmail.ivan.morozyk.moviesearch.databinding.ItemActorBinding
-import com.gmail.ivan.morozyk.moviesearch.ui.fragment.TitleDetailsFragmentDirections
 
 
-class ActorListAdapter :
+class ActorListAdapter(private val onActorClicked: (String) -> Unit) :
     ListAdapter<Person, ActorListAdapter.PersonHolder>(personDiffUtil) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = PersonHolder(
@@ -29,13 +27,7 @@ class ActorListAdapter :
 
         fun bind(person: Person) {
             with(binding) {
-                root.setOnClickListener {
-                    val action =
-                        TitleDetailsFragmentDirections.actionTitleDetailsFragmentToPersonDetailsFragment(
-                            person.id
-                        )
-                    root.findNavController().navigate(action)
-                }
+                root.setOnClickListener { onActorClicked(person.id) }
                 actorName.text = person.name
                 actorAsCharacter.text =
                     root.context.getString(R.string.title_details_as_character, person.asCharacter)

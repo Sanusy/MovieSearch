@@ -33,6 +33,8 @@ class TitleDetailsFragment : BaseFragment<FragmentTitleDetailsBinding>(),
 
     private lateinit var adapter: ActorListAdapter
 
+    private val args: TitleDetailsFragmentArgs by navArgs()
+
     @ProvidePresenter
     fun providePresenter(): TitleDetailsPresenter = get()
 
@@ -56,7 +58,7 @@ class TitleDetailsFragment : BaseFragment<FragmentTitleDetailsBinding>(),
             val appBarConfiguration = AppBarConfiguration(navController.graph)
             toolbar.setupWithNavController(navController, appBarConfiguration)
 
-            adapter = ActorListAdapter()
+            adapter = ActorListAdapter { presenter.onPersonClicked(it) }
             starListRecycler.adapter = adapter
 
             starListRecycler.addItemDecoration(
@@ -72,7 +74,7 @@ class TitleDetailsFragment : BaseFragment<FragmentTitleDetailsBinding>(),
         super.onStart()
 
         requireMainActivity().setSelectedItem(ItemSelected.TITLES)
-        presenter.loadTitle(navArgs<TitleDetailsFragmentArgs>().value.titleId)
+        presenter.loadTitle(args.titleId)
     }
 
     override fun showTitle(title: Title) = with(binding) {

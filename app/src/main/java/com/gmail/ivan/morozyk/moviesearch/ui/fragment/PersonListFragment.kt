@@ -40,7 +40,7 @@ class PersonListFragment : BaseFragment<FragmentPersonListBinding>(), PersonList
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = PersonListAdapter()
+        adapter = PersonListAdapter { presenter.onPersonClicked(it) }
 
         with(binding) {
             personRecycler.adapter = adapter

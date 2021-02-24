@@ -16,10 +16,16 @@ import com.gmail.ivan.morozyk.moviesearch.mvp.presenter.SettingsPresenter
 import com.gmail.ivan.morozyk.moviesearch.mvp.presenter.TitleDetailsPresenter
 import com.gmail.ivan.morozyk.moviesearch.mvvm.Resource
 import com.gmail.ivan.morozyk.moviesearch.mvvm.viewmodel.TitleListViewModel
+import com.gmail.ivan.morozyk.moviesearch.navigation.Router
+import com.gmail.ivan.morozyk.moviesearch.navigation.RouterImpl
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
+
+val navigationModule = module {
+    single<Router> { RouterImpl() }
+}
 
 val localStorageModule = module {
     single { SharedPrefHelper(androidContext()) }
@@ -51,15 +57,36 @@ val mappersModule = module {
 }
 
 val titleListModule = module {
-    viewModel { TitleListViewModel(get(), get(named(TITLE_DTO_MAPPER)), get(named(ERROR_MVVM_MAPPER))) }
+    viewModel {
+        TitleListViewModel(
+            get(),
+            get(named(TITLE_DTO_MAPPER)),
+            get(named(ERROR_MVVM_MAPPER)),
+            get()
+        )
+    }
 }
 
 val titleDetailsModule = module {
-    factory { TitleDetailsPresenter(get(), get(named(TITLE_DTO_MAPPER)), get(named(ERROR_MAPPER))) }
+    factory {
+        TitleDetailsPresenter(
+            get(),
+            get(named(TITLE_DTO_MAPPER)),
+            get(named(ERROR_MAPPER)),
+            get()
+        )
+    }
 }
 
 val personListModule = module {
-    factory { PersonListPresenter(get(), get(named(PERSON_DTO_MAPPER)), get(named(ERROR_MAPPER))) }
+    factory {
+        PersonListPresenter(
+            get(),
+            get(named(PERSON_DTO_MAPPER)),
+            get(named(ERROR_MAPPER)),
+            get()
+        )
+    }
 }
 
 val personDetailsModule = module {
@@ -67,7 +94,7 @@ val personDetailsModule = module {
         PersonDetailsPresenter(
             get(),
             get(named(PERSON_WITH_TITLES_DTO_MAPPER)),
-            get(named(ERROR_MAPPER))
+            get(named(ERROR_MAPPER)), get()
         )
     }
 }

@@ -6,6 +6,8 @@ import com.gmail.ivan.morozyk.moviesearch.data.mapper.BaseMapper
 import com.gmail.ivan.morozyk.moviesearch.data.mapper.HttpError
 import com.gmail.ivan.morozyk.moviesearch.data.service.PersonService
 import com.gmail.ivan.morozyk.moviesearch.mvp.contract.PersonDetailsContract
+import com.gmail.ivan.morozyk.moviesearch.navigation.Action
+import com.gmail.ivan.morozyk.moviesearch.navigation.Router
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -15,7 +17,8 @@ import moxy.presenterScope
 class PersonDetailsPresenter(
     private val personService: PersonService,
     private val personMapper: BaseMapper<PersonDto, Person>,
-    private val errorMapper: BaseMapper<Int, HttpError>
+    private val errorMapper: BaseMapper<Int, HttpError>,
+    private val router: Router
 ) : MvpPresenter<PersonDetailsContract.View>(), PersonDetailsContract.Presenter {
 
     override fun loadPerson(personId: String) {
@@ -32,5 +35,9 @@ class PersonDetailsPresenter(
             })
                 .also { viewState.hideProgress() }
         }
+    }
+
+    override fun onTitleClicked(titleId: String) {
+        router.navigate(Action.FromPersonDetailsToTitleDetails(titleId))
     }
 }

@@ -2,7 +2,6 @@ package com.gmail.ivan.morozyk.moviesearch.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -10,9 +9,9 @@ import com.bumptech.glide.Glide
 import com.gmail.ivan.morozyk.moviesearch.R
 import com.gmail.ivan.morozyk.moviesearch.data.Person
 import com.gmail.ivan.morozyk.moviesearch.databinding.ItemPersonBinding
-import com.gmail.ivan.morozyk.moviesearch.ui.fragment.PersonListFragmentDirections
 
-class PersonListAdapter : ListAdapter<Person, PersonListAdapter.PersonHolder>(personDiffUtil) {
+class PersonListAdapter(private val onPersonClicked: (String) -> Unit) :
+    ListAdapter<Person, PersonListAdapter.PersonHolder>(personDiffUtil) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = PersonHolder(
         ItemPersonBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -27,13 +26,7 @@ class PersonListAdapter : ListAdapter<Person, PersonListAdapter.PersonHolder>(pe
 
         fun bind(person: Person) = with(binding) {
 
-            root.setOnClickListener {
-                val action =
-                    PersonListFragmentDirections.actionPersonListFragmentToPersonDetailsFragment(
-                        person.id
-                    )
-                root.findNavController().navigate(action)
-            }
+            root.setOnClickListener { onPersonClicked(person.id) }
 
             Glide.with(root).load(person.image).circleCrop()
                 .placeholder(R.drawable.icon_title_placeholder).into(personItemImage)
