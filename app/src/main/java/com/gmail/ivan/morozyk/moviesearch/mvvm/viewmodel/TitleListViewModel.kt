@@ -28,7 +28,7 @@ class TitleListViewModel(
     private var query: Query = Query.GetQuery(QueryType.TOP_250_MOVIES)
 
     init {
-        getTitleList((query as Query.GetQuery).type)
+//        getTitleList((query as Query.GetQuery).type)
     }
 
     fun searchTitleByWord(word: String) {
