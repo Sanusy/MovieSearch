@@ -4,6 +4,7 @@ import com.gmail.ivan.morozyk.moviesearch.data.Person
 import com.gmail.ivan.morozyk.moviesearch.data.PersonDto
 import com.gmail.ivan.morozyk.moviesearch.data.Title
 import com.gmail.ivan.morozyk.moviesearch.data.TitleDto
+import com.gmail.ivan.morozyk.moviesearch.data.room.TitleRoomDto
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -52,4 +53,22 @@ class TitleDtoMapper(private val personMapper: BaseMapper<PersonDto, Person>) :
             input.imDbRating
         )
     }
+}
+
+class TitleRoomDtoMapper : BaseMapper<TitleRoomDto, Title> {
+    override fun map(input: TitleRoomDto) = with(input) {
+        Title(
+            id = id,
+            name = name,
+            type = type,
+            year = year,
+            image = image,
+            rating = rating
+        )
+    }
+}
+
+class TitleMapper : BaseMapper<Pair<String, Title>, TitleRoomDto> {
+
+    override fun map(input: Pair<String, Title>) = with(input.second) { TitleRoomDto(id, name, type, year, image, rating, input.first) }
 }

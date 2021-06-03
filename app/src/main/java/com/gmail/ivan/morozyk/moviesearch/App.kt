@@ -31,7 +31,8 @@ class App : Application() {
                 titleDetailsModule,
                 personListModule,
                 personDetailsModule,
-                settingsModule
+                settingsModule,
+                dataBaseModule,
             )
         }
 
