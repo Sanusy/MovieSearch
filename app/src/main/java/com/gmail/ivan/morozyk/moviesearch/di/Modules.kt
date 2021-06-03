@@ -1,11 +1,14 @@
 package com.gmail.ivan.morozyk.moviesearch.di
 
+import androidx.room.Room
 import com.gmail.ivan.morozyk.moviesearch.SharedPrefHelper
 import com.gmail.ivan.morozyk.moviesearch.data.Person
 import com.gmail.ivan.morozyk.moviesearch.data.PersonDto
 import com.gmail.ivan.morozyk.moviesearch.data.Title
 import com.gmail.ivan.morozyk.moviesearch.data.TitleDto
 import com.gmail.ivan.morozyk.moviesearch.data.mapper.*
+import com.gmail.ivan.morozyk.moviesearch.data.room.MoviesDatabase
+import com.gmail.ivan.morozyk.moviesearch.data.room.TitleRoomDto
 import com.gmail.ivan.morozyk.moviesearch.data.service.PersonService
 import com.gmail.ivan.morozyk.moviesearch.data.service.PersonServiceImpl
 import com.gmail.ivan.morozyk.moviesearch.data.service.TitleService
@@ -54,12 +57,17 @@ val mappersModule = module {
     }
     single<BaseMapper<Int, HttpError>>(named(ERROR_MAPPER)) { FuelHttpErrorMapper() }
     single<BaseMapper<Int, Resource.HttpError<Any>>>(named(ERROR_MVVM_MAPPER)) { FuelWithMVVMErrorMapper() }
+    single<BaseMapper<Pair<String,Title>, TitleRoomDto>>(named(TITLE_TO_ROOM_TITLE_MAPPER)) { TitleMapper() }
+    single<BaseMapper<TitleRoomDto, Title>>(named(ROOM_TITLE_TO_TITLE_MAPPER)) { TitleRoomDtoMapper() }
 }
 
 val titleListModule = module {
     viewModel {
         TitleListViewModel(
             get(),
+            get(),
+            get(named(TITLE_TO_ROOM_TITLE_MAPPER)),
+            get(named(ROOM_TITLE_TO_TITLE_MAPPER)),
             get(named(TITLE_DTO_MAPPER)),
             get(named(ERROR_MVVM_MAPPER)),
             get()
@@ -103,8 +111,15 @@ val settingsModule = module {
     factory { SettingsPresenter(get()) }
 }
 
+val dataBaseModule = module {
+    single { Room.databaseBuilder(get(), MoviesDatabase::class.java, "movie-search").build() }
+    single { get<MoviesDatabase>().titleDao() }
+}
+
 private const val TITLE_DTO_MAPPER = "Title Dto Mapper"
 private const val PERSON_DTO_MAPPER = "Person Dto Mapper"
 private const val PERSON_WITH_TITLES_DTO_MAPPER = "Person With titles Dto mapper"
 private const val ERROR_MAPPER = "error mapper"
 private const val ERROR_MVVM_MAPPER = "error mvvm mapper"
+private const val TITLE_TO_ROOM_TITLE_MAPPER = "Title to TitleRoomDto mapper"
+private const val ROOM_TITLE_TO_TITLE_MAPPER = "TitleRoomDto to Title mapper"

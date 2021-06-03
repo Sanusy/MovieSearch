@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.gmail.ivan.morozyk.moviesearch.data.Title
 import com.gmail.ivan.morozyk.moviesearch.data.TitleDto
 import com.gmail.ivan.morozyk.moviesearch.data.mapper.BaseMapper
+import com.gmail.ivan.morozyk.moviesearch.data.room.TitleDao
+import com.gmail.ivan.morozyk.moviesearch.data.room.TitleRoomDto
 import com.gmail.ivan.morozyk.moviesearch.data.service.TitleService
 import com.gmail.ivan.morozyk.moviesearch.mvvm.Resource
 import com.gmail.ivan.morozyk.moviesearch.navigation.Action
@@ -17,6 +19,9 @@ import kotlinx.coroutines.withContext
 
 class TitleListViewModel(
     private val titleService: TitleService,
+    private val titleDao: TitleDao,
+    private val titleToRoomTitleMapper: BaseMapper<Pair<String, Title>, TitleRoomDto>,
+    private val roomTitleToTitleMapper: BaseMapper<TitleRoomDto, Title>,
     private val titleMapper: BaseMapper<TitleDto, Title>,
     private val errorMapper: BaseMapper<Int, Resource.HttpError<List<Title>>>,
     private val router: Router
@@ -28,7 +33,7 @@ class TitleListViewModel(
     private var query: Query = Query.GetQuery(QueryType.TOP_250_MOVIES)
 
     init {
-//        getTitleList((query as Query.GetQuery).type)
+        getTitleList((query as Query.GetQuery).type)
     }
 
     fun searchTitleByWord(word: String) {
@@ -44,10 +49,27 @@ class TitleListViewModel(
                         titleMapper.map(titleDto)
                     }
 
+                    withContext(Dispatchers.IO) {
+                        titleDao.insertTitles(titlesToShow.map { title ->
+                            titleToRoomTitleMapper.map(
+                                Pair((query as? Query.SearchQuery)?.query ?: "", title)
+                            )
+                        })
+                    }
+
                     _titleData.value = Resource.Success(titlesToShow)
                 },
                 failure = {
-                    _titleData.value = errorMapper.map(it.response.statusCode)
+                    val locallySavedTitles = withContext(Dispatchers.IO) { titleDao.getTitles((query as? Query.SearchQuery)?.query ?: "") }
+
+                    if (locallySavedTitles.isNullOrEmpty()) {
+                        _titleData.value = errorMapper.map(it.response.statusCode)
+                    } else {
+                        val titlesToShow = locallySavedTitles.map { roomTitle ->
+                            roomTitleToTitleMapper.map(roomTitle)
+                        }
+                        _titleData.value = Resource.Success(titlesToShow)
+                    }
                 })
         }
     }
@@ -66,10 +88,27 @@ class TitleListViewModel(
                         titleMapper.map(titleDto)
                     }
 
+                    withContext(Dispatchers.IO) {
+                        titleDao.insertTitles(titlesToShow.map { title ->
+                            titleToRoomTitleMapper.map(
+                                Pair((query as? Query.GetQuery)?.type?.queryString ?: "", title)
+                            )
+                        })
+                    }
+
                     _titleData.value = Resource.Success(titlesToShow)
                 },
                 failure = {
-                    _titleData.value = errorMapper.map(it.response.statusCode)
+                    val locallySavedTitles = withContext(Dispatchers.IO) { titleDao.getTitles((query as? Query.GetQuery)?.type?.queryString ?: "") }
+
+                    if (locallySavedTitles.isNullOrEmpty()) {
+                        _titleData.value = errorMapper.map(it.response.statusCode)
+                    } else {
+                        val titlesToShow = locallySavedTitles.map { roomTitle ->
+                            roomTitleToTitleMapper.map(roomTitle)
+                        }
+                        _titleData.value = Resource.Success(titlesToShow)
+                    }
                 })
         }
     }
